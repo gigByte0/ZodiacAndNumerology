@@ -23,15 +23,16 @@ INSERT INTO NumberOfMonth(nameOfMonth, numOfMonth) VALUES
 
 CREATE TABLE Users(
 userName VARCHAR(30) UNIQUE NOT NULL,
+userPassword VARCHAR(30) NOT NULL, 
 monthOfBirth INT NOT NULL,
 dayOfBirth INT NOT NULL,
 yearOfBirth INT NOT NULL,
 sexAtBirth ENUM("male", "female"), 
 PRIMARY KEY (userName));
 
-INSERT INTO Users(userName, monthOfBirth, dayOfBirth, yearOfBirth, sexAtBirth) 
-VALUES ("gimatt", 10, 8, 2002, "female"),
-("greg", 02, 29, 1996, "male");
+INSERT INTO Users(userName, userPassword, monthOfBirth, dayOfBirth, yearOfBirth, sexAtBirth) 
+VALUES ("gimatt", "15283", 10, 8, 2002, "female"), 
+("greg", "1683", 02, 29, 1996, "male");
 
 
 CREATE TABLE Friends(

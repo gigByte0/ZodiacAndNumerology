@@ -12,6 +12,123 @@ SELECT * FROM ZodiacAndNumerology.LoShuNumbers;
 SELECT * FROM ZodiacAndNumerology.KuaNumbers;
 SELECT * FROM ZodiacAndNumerology.CurrentYearHoroscope;
 
+-- FUNCTION TO GET MONTH NUM FROM MONTH STRING
+DROP FUNCTION IF EXISTS ZodiacAndNumerology.getMonthNum;
+DELIMITER //
+CREATE FUNCTION ZodiacAndNumerology.getMonthNum(mob VARCHAR(30)) 
+RETURNS INT(2)
+BEGIN 
+DECLARE monthNum INT(2);
+SELECT NumberOfMonth.numOfMonth INTO monthNum FROM NumberOfMonth WHERE (mob = nameOfMonth);
+RETURN monthNum;
+END //
+DELIMITER ;
+-- FUNCTION TEST 
+SELECT getMonthNum("October");
+SELECT getMonthNum("March");
+
+-- FUNCTION TO GET USER PASSWORD
+DROP FUNCTION IF EXISTS ZodiacAndNumerology.getUserPass;
+DELIMITER //
+CREATE FUNCTION ZodiacAndNumerology.getUserPass(userN VARCHAR(30)) 
+RETURNS VARCHAR(30)
+BEGIN 
+DECLARE pass VARCHAR(30);
+SELECT Users.userPassword INTO pass FROM Users WHERE (Users.userName = userN);
+RETURN pass;
+END //
+DELIMITER ;
+-- FUNCTION TEST 
+SELECT getUserPass("gimatt");
+
+
+-- FUNCTION TO GET USER MOB 
+DROP FUNCTION IF EXISTS ZodiacAndNumerology.getUserMOB;
+DELIMITER //
+CREATE FUNCTION ZodiacAndNumerology.getUserMOB(userN VARCHAR(30)) 
+RETURNS INT
+BEGIN 
+DECLARE mob INT(2);
+SELECT Users.monthOfBirth INTO mob FROM Users WHERE (Users.userName = userN);
+RETURN mob;
+END //
+DELIMITER ;
+-- FUNCTION TEST 
+SELECT getUserMOB("greg");
+
+-- FUNCTION TO GET USER DOB 
+DROP FUNCTION IF EXISTS ZodiacAndNumerology.getUserDOB;
+DELIMITER //
+CREATE FUNCTION ZodiacAndNumerology.getUserDOB(userN VARCHAR(30)) 
+RETURNS INT
+BEGIN 
+DECLARE dob INT(2);
+SELECT Users.dayOfBirth INTO dob FROM Users WHERE (Users.userName = userN);
+RETURN dob;
+END //
+DELIMITER ;
+-- FUNCTION TEST 
+SELECT getUserDOB("greg");
+
+-- FUNCTION TO GET USER YOB 
+DROP FUNCTION IF EXISTS ZodiacAndNumerology.getUserYOB;
+DELIMITER //
+CREATE FUNCTION ZodiacAndNumerology.getUserYOB(userN VARCHAR(30)) 
+RETURNS INT
+BEGIN 
+DECLARE yob INT;
+SELECT Users.yearOfBirth INTO yob FROM Users WHERE (Users.userName = userN);
+RETURN yob;
+END //
+DELIMITER ;
+-- FUNCTION TEST 
+SELECT getUserYOB("greg");
+
+-- FUNCTION TO GET USER SAB 
+DROP FUNCTION IF EXISTS ZodiacAndNumerology.getUserSAB;
+DELIMITER //
+CREATE FUNCTION ZodiacAndNumerology.getUserSAB(userN VARCHAR(30)) 
+RETURNS VARCHAR(10)
+BEGIN 
+DECLARE sab VARCHAR(10);
+SELECT Users.sexAtBirth INTO sab FROM Users WHERE (Users.userName = userN);
+RETURN sab;
+END //
+DELIMITER ;
+-- FUNCTION TEST 
+SELECT getUserSAB("greg");
+
+-- PROCEDURE TO GET LIST OF USER FRIENDS 
+DROP PROCEDURE IF EXISTS ZodiacAndNumerology.getFriends;
+DELIMITER //
+CREATE PROCEDURE ZodiacAndNumerology.getFriends(userN VARCHAR(30)) 
+BEGIN 
+(SELECT Friends.user1Name AS friends FROM ZodiacAndNumerology.Friends WHERE (userN = Friends.user2Name))
+UNION 
+(SELECT Friends.user2Name FROM ZodiacAndNumerology.Friends WHERE (userN = Friends.user1Name));
+END //
+DELIMITER ;
+-- FUNCTION TEST 
+CALL ZodiacAndNumerology.getFriends("gimatt");
+
+-- PROCEDURE TO GET LIST OF USER FRIENDS 
+DROP FUNCTION IF EXISTS ZodiacAndNumerology.getNumFriends;
+DELIMITER //
+CREATE FUNCTION ZodiacAndNumerology.getNumFriends(userN VARCHAR(30)) 
+RETURNS INT
+BEGIN
+DECLARE numFriends INT; 
+SELECT COUNT(a.friends) INTO numFriends FROM
+((SELECT Friends.user1Name AS friends FROM ZodiacAndNumerology.Friends WHERE (userN = Friends.user2Name))
+UNION 
+(SELECT Friends.user2Name FROM ZodiacAndNumerology.Friends WHERE (userN = Friends.user1Name))) as a;
+RETURN numFriends;
+END //
+DELIMITER ;
+-- FUNCTION TEST 
+SELECT ZodiacAndNumerology.getNumFriends("gimatt");
+
+
 -- FUNCTION TO GET SUN SIGN FROM DATE
 DROP FUNCTION IF EXISTS ZodiacAndNumerology.getSunSign;
 DELIMITER //
@@ -222,14 +339,14 @@ SELECT getKuaNumber(3, 21, 1970, "female");
 -- PROCEDURE TO ADD USERS 
 DROP PROCEDURE IF EXISTS ZodiacAndNumerology.addUser;
 DELIMITER // 
-CREATE PROCEDURE ZodiacAndNumerology.addUser(userName VARCHAR(50), monthOfBirth INT, dayOfBirth INT, yearOfBirth INT,
-sexAtBirth ENUM("male", "female")) 
+CREATE PROCEDURE ZodiacAndNumerology.addUser(userName VARCHAR(50), userPassword VARCHAR(30), monthOfBirth INT,
+dayOfBirth INT, yearOfBirth INT, sexAtBirth ENUM("male", "female")) 
 BEGIN 
 INSERT INTO ZodiacAndNumerology.Users VALUE
-(userName, monthOfBirth, dayOfBirth, yearOfBirth, sexAtBirth); 
+(userName, userPassword, monthOfBirth, dayOfBirth, yearOfBirth, sexAtBirth); 
 END //
 DELIMITER ;
-CALL ZodiacAndNumerology.addUser("jo", 03, 10, 1970, "female");
+CALL ZodiacAndNumerology.addUser("jo", "hello1234", 03, 10, 1970, "female");
 
 -- PROCEDURE TO DELETE USER ACCOUNT -> THIS WILL TAKE USER BACK TO LOGIN 
 DROP PROCEDURE IF EXISTS ZodiacAndNumerology.removeUser;
@@ -309,10 +426,3 @@ DELIMITER ;
 -- PROCEDURE TEST 
 CALL get2022Horoscope(10, 8, 2002, "female");
 CALL get2022Horoscope(03, 10, 1966, "male");
-
-
-
-
-
-
-
