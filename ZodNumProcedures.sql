@@ -8,7 +8,6 @@ SELECT * FROM ZodiacAndNumerology.Friends;
 SELECT * FROM ZodiacAndNumerology.SunSignCompatibility;
 SELECT * FROM ZodiacAndNumerology.VedicSunSigns;
 SELECT * FROM ZodiacAndNumerology.LifePathNumbers;
-SELECT * FROM ZodiacAndNumerology.LoShuNumbers;
 SELECT * FROM ZodiacAndNumerology.KuaNumbers;
 SELECT * FROM ZodiacAndNumerology.CurrentYearHoroscope;
 
@@ -110,6 +109,10 @@ END //
 DELIMITER ;
 -- FUNCTION TEST 
 CALL ZodiacAndNumerology.getFriends("gimatt");
+-- CALL ZodiacAndNumerology.addUser("john", "109", 03, 10, 1966, "male");
+-- CALL ZodiacAndNumerology.addFriend("john", "gimatt");
+-- CALL ZodiacAndNumerology.addFriend("greg", "jo");
+CALL ZodiacAndNumerology.getFriends("greg");
 
 -- PROCEDURE TO GET LIST OF USER FRIENDS 
 DROP FUNCTION IF EXISTS ZodiacAndNumerology.getNumFriends;
@@ -241,6 +244,10 @@ END //
 DELIMITER ;
 -- FUNCTION TEST 
 SELECT getFriendCompatibility("gimatt", "greg");
+SELECT getFriendCompatibility("greg", "gimatt");
+CALL addUser("jo", "1234", 03, 21, 1970, "female");
+CALL addFriend("jo", "greg");
+CALL addBestFriend("jo", "greg");
 -- SELECT getFriendCompatibility("Libra", "Scorpio", "Libra", "Scorpio");
 -- SELECT getFriendCompatibility("Gemini", "Sagittarius", "Capricorn", "Pisces");
 
@@ -262,6 +269,40 @@ SELECT getVedicSunSign(10, 8);
 SELECT getVedicSunSign(12, 24);
 SELECT getVedicSunSign(2, 29);
 SELECT getVedicSunSign(3, 21);
+
+-- FUNCTION TO GET DESCRIPTION OF LIFE PATH NUMBER
+DROP FUNCTION IF EXISTS ZodiacAndNumerology.getLifePathDescription;
+DELIMITER //
+CREATE FUNCTION ZodiacAndNumerology.getLifePathDescription(lpn INT) 
+RETURNS VARCHAR(200)
+BEGIN 
+DECLARE des VARCHAR(200);
+SELECT GROUP_CONCAT(LifePathNumbers.descriptionWord1, ", ", LifePathNumbers.descriptionWord2, ", ",
+LifePathNumbers.descriptionWord3,", ", LifePathNumbers.descriptionWord4, ", ", LifePathNumbers.descriptionWord5) 
+INTO des FROM ZodiacAndNumerology.LifePathNumbers 
+WHERE (lpn = LifePathNumbers.lifePathNumber);
+RETURN des;
+END //
+DELIMITER ;
+-- FUNCTION TEST 
+SELECT getLifePathDescription(8);
+SELECT getLifePathDescription(4);
+
+-- FUNCTION TO GET TYPE OF LIFE PATH NUMBER
+DROP FUNCTION IF EXISTS ZodiacAndNumerology.getLifePathType;
+DELIMITER //
+CREATE FUNCTION ZodiacAndNumerology.getLifePathType(lpn INT) 
+RETURNS VARCHAR(100)
+BEGIN 
+DECLARE typ VARCHAR(100);
+SELECT LifePathNumbers.lifePathType INTO typ FROM ZodiacAndNumerology.LifePathNumbers WHERE 
+(LifePathNumbers.lifePathNumber = lpn);
+RETURN typ;
+END //
+DELIMITER ;
+-- FUNCTION TEST 
+SELECT getLifePathType(8);
+SELECT getLifePathType(4);
 
 -- FUNCTION TO GET LIFE PATH NUMBER FROM dob 
 DROP FUNCTION IF EXISTS ZodiacAndNumerology.getLifePathNumber;
@@ -295,6 +336,70 @@ DELIMITER ;
 SELECT getLifePathNumber(03, 21, 1970);
 SELECT getLifePathNumber(10, 08, 2002);
 SELECT getLifePathNumber(03, 10, 1966);
+
+-- FUNCTION TO GET Kua Lucky Colors 
+DROP FUNCTION IF EXISTS ZodiacAndNumerology.getKuaColors;
+DELIMITER //
+CREATE FUNCTION ZodiacAndNumerology.getKuaColors(kn int) 
+RETURNS VARCHAR(100)
+BEGIN 
+DECLARE col VARCHAR(100);
+SELECT GROUP_CONCAT(KuaNumbers.kuaLuckyColor1, ", ", KuaNumbers.kuaLuckyColor2) INTO col 
+FROM ZodiacAndNumerology.KuaNumbers WHERE (KuaNumbers.kuaNumber = kn);
+RETURN col;
+END //
+DELIMITER ;
+-- FUNCTION TEST 
+SELECT getKuaColors(8);
+SELECT getKuaColors(4);
+
+-- FUNCTION TO GET Kua Lucky Season 
+DROP FUNCTION IF EXISTS ZodiacAndNumerology.getKuaLuckySeason;
+DELIMITER //
+CREATE FUNCTION ZodiacAndNumerology.getKuaLuckySeason(kn INT) 
+RETURNS VARCHAR(100)
+BEGIN 
+DECLARE typ VARCHAR(100);
+SELECT KuaNumbers.kuaLuckySeason INTO typ FROM KuaNumbers WHERE (KuaNumbers.kuaNumber = kn);
+RETURN typ;
+END //
+DELIMITER ;
+-- FUNCTION TEST 
+SELECT getKuaLuckySeason(8);
+SELECT getKuaLuckySeason(4);
+
+
+-- FUNCTION TO GET Kua direction group, Lucky and unlucky directions
+DROP FUNCTION IF EXISTS ZodiacAndNumerology.getKuaDirections;
+DELIMITER //
+CREATE FUNCTION ZodiacAndNumerology.getKuaDirections(kn INT) 
+RETURNS VARCHAR(100)
+BEGIN 
+DECLARE typ VARCHAR(100);
+SELECT GROUP_CONCAT(KuaNumbers.kuaDirectionGroup, ", ", KuaNumbers.kuaLuckyDirection, ", ", 
+KuaNumbers.kuaUnluckyDirection) INTO typ FROM KuaNumbers WHERE (KuaNumbers.kuaNumber = kn);
+RETURN typ;
+END //
+DELIMITER ;
+-- FUNCTION TEST 
+SELECT getKuaDirections(8);
+SELECT getKuaDirections(4);
+
+-- FUNCTION TO GET Kua luck 
+DROP FUNCTION IF EXISTS ZodiacAndNumerology.getKuaLuck;
+DELIMITER //
+CREATE FUNCTION ZodiacAndNumerology.getKuaLuck(kn INT) 
+RETURNS VARCHAR(100)
+BEGIN 
+DECLARE typ VARCHAR(100);
+SELECT KuaNumbers.kuaLuck INTO typ FROM KuaNumbers WHERE (KuaNumbers.kuaNumber = kn);
+RETURN typ;
+END //
+DELIMITER ;
+-- FUNCTION TEST 
+SELECT getKuaLuck(8);
+SELECT getKuaLuck(4);
+
 
 -- FUNCTION TO GET KUA NUMBER 
 DROP FUNCTION IF EXISTS ZodiacAndNumerology.getKuaNumber;
@@ -346,7 +451,7 @@ INSERT INTO ZodiacAndNumerology.Users VALUE
 (userName, userPassword, monthOfBirth, dayOfBirth, yearOfBirth, sexAtBirth); 
 END //
 DELIMITER ;
-CALL ZodiacAndNumerology.addUser("jo", "hello1234", 03, 10, 1970, "female");
+-- CALL ZodiacAndNumerology.addUser("jo", "hello1234", 03, 10, 1970, "female");
 
 -- PROCEDURE TO DELETE USER ACCOUNT -> THIS WILL TAKE USER BACK TO LOGIN 
 DROP PROCEDURE IF EXISTS ZodiacAndNumerology.removeUser;
@@ -356,7 +461,7 @@ BEGIN
 DELETE FROM ZodiacAndNumerology.Users WHERE (Users.userName = userName);
 END //
 DELIMITER ;
-CALL ZodiacAndNumerology.removeUser("jo");
+-- CALL ZodiacAndNumerology.removeUser("jo");
 
 -- PROCEDURE TO ADD FRIENDS 
 DROP PROCEDURE IF EXISTS ZodiacAndNumerology.addFriend;
@@ -366,7 +471,7 @@ BEGIN
 INSERT INTO ZodiacAndNumerology.Friends VALUE (user1Name, user2Name, 0);
 END //
 DELIMITER ;
-CALL addFriend("gimatt", "greg");
+-- CALL addFriend("gimatt", "greg");
 
 -- PROCEDURE TO REMOVE FRIENDS 
 DROP PROCEDURE IF EXISTS ZodiacAndNumerology.removeFriend;
@@ -376,7 +481,7 @@ BEGIN
 DELETE FROM ZodiacAndNumerology.Friends WHERE ((Friends.user1Name = user1Name) AND (Friends.user2Name = user2Name));
 END //
 DELIMITER ;
-CALL removeFriend("gimatt", "greg");
+-- CALL removeFriend("gimatt", "greg");
 
 
 -- PROCEDURE TO ADD FRIENDS AS BEST FRIENDS REMOVE BEST FRIENDS
@@ -425,4 +530,4 @@ END //
 DELIMITER ;
 -- PROCEDURE TEST 
 CALL get2022Horoscope(10, 8, 2002, "female");
-CALL get2022Horoscope(03, 10, 1966, "male");
+CALL get2022Horoscope(02, 29, 1996, "male");

@@ -1013,6 +1013,7 @@ INSERT INTO KuaNumbers (kuaNumber, kuaElement, kuaDirectionGroup, kuaLuckySeason
 (8, "earth", "WEST", "late winter", "wisdom", "southwest", "south", "turquoise", "burnt orange"),
 (9, "fire", "EAST", "early summer", "reputation","east", "northeast", "red", "orange");
 
+/*
 CREATE TABLE LoShuNumbers(
 loShuNumber INT UNIQUE NOT NULL, 
 occurenceOne VARCHAR(30) UNIQUE NOT NULL, 
@@ -1030,7 +1031,7 @@ INSERT INTO LoShuNumbers(loShuNumber, occurenceOne, occurenceTwo, occurenceThree
 (6, "advising", "originative", "high tempered", "emotional"), 
 (7, "experienced", "spiritual", "prone to loss", "prone to personal disruptions"), 
 (8, "scrupulous", "adamant", "materialistic", "always active"), 
-(9, "intelligent", "critical", "giving", "brilliant");
+(9, "intelligent", "critical", "giving", "brilliant"); */
 
 CREATE TABLE CurrentYearHoroscope(
 directionType VARCHAR(30), 
